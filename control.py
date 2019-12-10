@@ -20,6 +20,9 @@ receviedtarget1_lock = threading.Lock()
 receviedtarget2_lock = threading.Lock()
 receviedtarget3_lock = threading.Lock()
 
+target_id = [-1,-1,-1]
+target_received_all = False
+
 def failure_handle(data):
     global fail_lock,state_fail
     fail_lock.acquire()
@@ -59,6 +62,24 @@ def receviedtarget3_handle(data):
     print ("state_receviedtarget3 = {state_receviedtarget3}".format(state_receviedtarget3=state_receviedtarget3) )
     receviedtarget3_lock.release()
 
+def target1_handle (data):
+    global target_id,target_received_all
+    target_id [0] = data.data
+    if min(target_id) >= 0:
+        target_received_all = True
+
+def target2_handle (data):
+    global target_id,target_received_all
+    target_id [1] = data.data
+    if min(target_id) >= 0:
+        target_received_all = True
+
+
+def target3_handle (data):
+    global target_id,target_received_all
+    target_id [2] = data.data
+    if min(target_id) >= 0:
+        target_received_all = True
 
 def simulate_run():
     global state_received,state_fail,state_receviedtarget1,state_receviedtarget2,state_receviedtarget3
@@ -67,6 +88,15 @@ def simulate_run():
     rospy.Subscriber(groupid+'/receviedtarget1', Int16, receviedtarget1_handle)
     rospy.Subscriber(groupid+'/receviedtarget2', Int16, receviedtarget2_handle)
     rospy.Subscriber(groupid+'/receviedtarget3', Int16, receviedtarget3_handle)
+    rospy.Subscriber(groupid+'/target1',Int16,target1_handle)
+    rospy.Subscriber(groupid+'/target2',Int16,target2_handle)
+    rospy.Subscriber(groupid+'/target3',Int16,target3_handle)
+
+    while not target_received_all: # 等待三个物体都被正确配置
+        time.sleep(1)
+        print("wait objs")
+    
+    print("objs configed ready: {target_id}".format(target_id=target_id) )
 
     takeoff_pub.publish(1) #让飞机起飞
     wait_epoch = 0
