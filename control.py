@@ -10,57 +10,62 @@ GROUP_INDEX = 1
 takeoff_pub, seenfire_pub, tgt1_pub ,tgt2_pub, tgt3_pub, done_pub = None,None,None,None,None,None
 state_fail = 0
 state_received = 0
-state_receviedtarget1 = 0
-state_receviedtarget2 = 0
-state_receviedtarget3 = 0
+state_receivedtarget1 = 0
+state_receivedtarget2 = 0
+state_receivedtarget3 = 0
 
 fail_lock = threading.Lock()
 received_lock = threading.Lock()
-receviedtarget1_lock = threading.Lock()
-receviedtarget2_lock = threading.Lock()
-receviedtarget3_lock = threading.Lock()
+receivedtarget1_lock = threading.Lock()
+receivedtarget2_lock = threading.Lock()
+receivedtarget3_lock = threading.Lock()
 
 target_id = [-1,-1,-1]
 target_received_all = False
 
 def failure_handle(data):
     global fail_lock,state_fail
-    fail_lock.acquire()
-    state_fail = data.data
-    print ("state_fail = {state_fail}".format(state_fail=state_fail) )
-    fail_lock.release()
+    if state_fail == 0:
+        fail_lock.acquire()
+        state_fail = data.data
+        print ("state_fail = {state_fail}".format(state_fail=state_fail) )
+        fail_lock.release()
 
 
 def received_handle(data):
     global received_lock,state_received
-    received_lock.acquire()
-    state_received = data.data
-    print ("state_received = {state_received}".format(state_received=state_received) )
-    received_lock.release()
+    if state_received == 0:
+        received_lock.acquire()
+        state_received = data.data
+        print ("state_received = {state_received}".format(state_received=state_received) )
+        received_lock.release()
 
 
-def receviedtarget1_handle(data):
-    global receviedtarget1_lock,state_receviedtarget1
-    receviedtarget1_lock.acquire()
-    state_receviedtarget1 = data.data
-    print ("state_receviedtarget1 = {state_receviedtarget1}".format(state_receviedtarget1=state_receviedtarget1) )
-    receviedtarget1_lock.release()
+def receivedtarget1_handle(data):
+    global receivedtarget1_lock,state_receivedtarget1
+    if (state_receivedtarget1 == 0):
+        receivedtarget1_lock.acquire()
+        state_receivedtarget1 = data.data
+        print ("state_receivedtarget1 = {state_receivedtarget1}".format(state_receivedtarget1=state_receivedtarget1) )
+        receivedtarget1_lock.release()
 
 
-def receviedtarget2_handle(data):
-    global receviedtarget2_lock,state_receviedtarget2
-    receviedtarget2_lock.acquire()
-    state_receviedtarget2 = data.data
-    print ("state_receviedtarget2 = {state_receviedtarget2}".format(state_receviedtarget2=state_receviedtarget2) )
-    receviedtarget2_lock.release()
+def receivedtarget2_handle(data):
+    global receivedtarget2_lock,state_receivedtarget2
+    if (state_receivedtarget2 == 0):
+        receivedtarget2_lock.acquire()
+        state_receivedtarget2 = data.data
+        print ("state_receivedtarget2 = {state_receivedtarget2}".format(state_receivedtarget2=state_receivedtarget2) )
+        receivedtarget2_lock.release()
 
 
-def receviedtarget3_handle(data):
-    global receviedtarget3_lock,state_receviedtarget3
-    receviedtarget3_lock.acquire()
-    state_receviedtarget3 = data.data
-    print ("state_receviedtarget3 = {state_receviedtarget3}".format(state_receviedtarget3=state_receviedtarget3) )
-    receviedtarget3_lock.release()
+def receivedtarget3_handle(data):
+    global receivedtarget3_lock,state_receivedtarget3
+    if state_receivedtarget3 == 0:
+        receivedtarget3_lock.acquire()
+        state_receivedtarget3 = data.data
+        print ("state_receivedtarget3 = {state_receivedtarget3}".format(state_receivedtarget3=state_receivedtarget3) )
+        receivedtarget3_lock.release()
 
 def target1_handle (data):
     global target_id,target_received_all
@@ -82,12 +87,12 @@ def target3_handle (data):
         target_received_all = True
 
 def simulate_run():
-    global state_received,state_fail,state_receviedtarget1,state_receviedtarget2,state_receviedtarget3
+    global state_received,state_fail,state_receivedtarget1,state_receivedtarget2,state_receivedtarget3
     rospy.Subscriber(groupid+'/failure', Int16, failure_handle)
     rospy.Subscriber(groupid+'/received', Int16, received_handle)
-    rospy.Subscriber(groupid+'/receviedtarget1', Int16, receviedtarget1_handle)
-    rospy.Subscriber(groupid+'/receviedtarget2', Int16, receviedtarget2_handle)
-    rospy.Subscriber(groupid+'/receviedtarget3', Int16, receviedtarget3_handle)
+    rospy.Subscriber(groupid+'/receivedtarget1', Int16, receivedtarget1_handle)
+    rospy.Subscriber(groupid+'/receivedtarget2', Int16, receivedtarget2_handle)
+    rospy.Subscriber(groupid+'/receivedtarget3', Int16, receivedtarget3_handle)
     rospy.Subscriber(groupid+'/target1',Int16,target1_handle)
     rospy.Subscriber(groupid+'/target2',Int16,target2_handle)
     rospy.Subscriber(groupid+'/target3',Int16,target3_handle)
@@ -119,7 +124,7 @@ def simulate_run():
 
     tgt1_pub.publish(tgt1_guizi)
     wait_epoch = 0
-    while not state_receviedtarget1: # 等待上位机回复
+    while not state_receivedtarget1: # 等待上位机回复
         time.sleep(1)
         wait_epoch+=1
         if (state_fail):
@@ -134,7 +139,7 @@ def simulate_run():
     tgt2_guizi = 4
     tgt2_pub.publish(tgt2_guizi)
     wait_epoch = 0
-    while not state_receviedtarget2: # 等待上位机回复
+    while not state_receivedtarget2: # 等待上位机回复
         time.sleep(1)
         wait_epoch+=1
         if (state_fail):
@@ -150,7 +155,7 @@ def simulate_run():
     tgt3_guizi = 5
     tgt3_pub.publish(tgt3_guizi)
     wait_epoch = 0
-    while not state_receviedtarget3: # 等待上位机回复
+    while not state_receivedtarget3: # 等待上位机回复
         time.sleep(1)
         wait_epoch+=1
         if (state_fail):
