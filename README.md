@@ -9,14 +9,14 @@
 - 读到请求信号后，，向`/groupid/received`话题发送起飞准许
   - 如果当前是当前正在比赛的组别，话题内容是1，score+=10，开始计时
   - 假如不是，发送0
-- 向`/groupid/target1`发送第一个要找的目标,为0-4中的一个，
+- 向`/groupid/target1`发送第一个要找的目标,为1-5中的一个，注意！！！物体编号是1-5
   - 在`/groupid/takeoff`收到之后开始发送
   - 同上，还有`/groupid/target2`和`/groupid/target3`的任务目标发布，
 - 读取`/groupid/seenfire` 话题
   - 内容是0或者1 ，1表示无人机已经成功穿过着火点
   - score+=20
 - 读取`/groupid/seentarget1` 话题，
-  - 内容是柜子的id，也就是数字0-4，
+  - 内容是柜子的id，也就是数字1-5，注意！！！编号是1-5
   - 判断与系统存储的数字是否一致，
     - 如果一致，score+=20，
       - 向`/groupid/receivedtarget1` 话题发送1，表示已经收到，可以向下进行
