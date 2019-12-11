@@ -9,7 +9,7 @@
 - 读到请求信号后，，向`/groupid/received`话题发送起飞准许
   - 如果当前是当前正在比赛的组别，话题内容是1，score+=10，开始计时
   - 假如不是，发送0
-- 向`/groupid/target1`发送第一个要找的目标,为1-5中的一个，
+- 向`/groupid/target1`发送第一个要找的目标,为0-4中的一个，
   - 在`/groupid/takeoff`收到之后开始发送
   - 同上，还有`/groupid/target2`和`/groupid/target3`的任务目标发布，
 - 读取`/groupid/seenfire` 话题
