@@ -9,8 +9,8 @@ from std_msgs.msg import String,Int16,Bool
 GROUP_INDEX = 1
 
 fire_obj_names = ['cat','painting','files','baby','gas tank']
-aim_objs = [0,3,4] #分别对应　'cat'，　'baby'，　和　'gas tank'
-targets = [3,4,5]
+aim_objs = [1,4,5] #分别对应　'cat'，　'baby'，　和　'gas tank'，注意，上位机的物品编号是1-5
+targets = [3,4,5] #分别的柜子id为 3 4 5，注意，柜子的编号也是 1-5
 
 
 fail_pub , rcvd_pub , tgt1_pub , tgt2_pub , tgt3_pub = None, None,None,None,None
